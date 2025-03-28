@@ -1,16 +1,25 @@
 // Global settings
 const BACKEND_URL = 'http://localhost:3000/api';
-const TARGET_LANG = 'es'; // Change this to the language you're learning
 let userDictionary = new Set(); // Words the user already knows
 let pageWords = new Set(); // Words found on current page
 let translationCache = {}; // Cache for translations
+let targetLanguage = 'es';
+let minWordLength = 3;
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', async () => {
-  // Get user's known words from storage
-  chrome.storage.local.get(['userDictionary'], (result) => {
+  // Get user's known words and settings from storage
+  chrome.storage.local.get(['userDictionary', 'targetLanguage', 'minWordLength'], (result) => {
     if (result.userDictionary) {
       userDictionary = new Set(result.userDictionary);
+    }
+    
+    if (result.targetLanguage) {
+      targetLanguage = result.targetLanguage;
+    }
+    
+    if (result.minWordLength) {
+      minWordLength = result.minWordLength;
     }
     
     // Start scanning the page
@@ -30,9 +39,19 @@ function scanPage() {
         // Skip script, style tags and tiny text nodes
         if (node.parentNode.tagName === 'SCRIPT' || 
             node.parentNode.tagName === 'STYLE' ||
-            node.textContent.trim().length < 2) {
+            node.textContent.trim().length < minWordLength) {
           return NodeFilter.FILTER_REJECT;
         }
+        
+        // Skip nodes that are likely to be UI elements or code
+        const parent = node.parentNode;
+        const style = getComputedStyle(parent);
+        
+        // Skip tiny text or invisible elements
+        if (parseInt(style.fontSize) < 8 || style.display === 'none' || style.visibility === 'hidden') {
+          return NodeFilter.FILTER_REJECT;
+        }
+        
         return NodeFilter.FILTER_ACCEPT;
       }
     }
@@ -51,7 +70,7 @@ function scanPage() {
     chrome.runtime.sendMessage({
       action: 'processPageWords',
       words: Array.from(pageWords),
-      language: TARGET_LANG
+      language: targetLanguage
     });
   }
 }
@@ -60,12 +79,15 @@ function scanPage() {
 function processTextNode(textNode) {
   const text = textNode.textContent;
   
-  // Simple word extraction (can be improved for different languages)
-  const words = text.match(/\\b[\\w']+\\b/g) || [];
+  // Use word boundaries to identify words (includes apostrophes)
+  const wordRegex = /\b[a-zA-Z]([a-zA-Z']*[a-zA-Z])?\b/g;
+  const words = text.match(wordRegex);
+  
+  if (!words) return;
   
   // Add to page words collection
   words.forEach(word => {
-    if (word.length > 2) { // Skip short words
+    if (word.length >= minWordLength) { // Skip short words
       const lowerWord = word.toLowerCase();
       pageWords.add(lowerWord);
       
@@ -143,7 +165,7 @@ async function showTranslationPopup(element, word) {
         },
         body: JSON.stringify({
           word,
-          targetLang: TARGET_LANG
+          targetLang: targetLanguage
         }),
       });
       
