@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LangLearn - Review Words</title>
+  <link href="tailwind.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+  <!-- Navigation Header -->
+  <nav class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex">
+          <div class="flex-shrink-0 flex items-center">
+            <h1 class="text-2xl font-bold text-blue-600">LangLearn</h1>
+          </div>
+          <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
+            <a href="dashboard.html" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              Dashboard
+            </a>
+            <a href="review.html" class="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              Review
+            </a>
+            <a href="cheatsheets.html" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              Cheatsheets
+            </a>
+            <a href="settings.html" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              Settings
+            </a>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <span id="user-target-lang" class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">Spanish</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Review Header -->
+    <div class="mb-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold text-gray-900">Review Words</h2>
+        <div class="flex space-x-3">
+          <button id="create-cheatsheet-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+            Create Cheatsheet
+          </button>
+          <button id="start-quiz-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Start Quiz
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Options -->
+    <div class="bg-white shadow rounded-lg mb-6">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Review Options</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label for="filter-status" class="block text-sm font-medium text-gray-700">Status</label>
+            <select id="filter-status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+              <option value="all">All Words</option>
+              <option value="learning" selected>Learning</option>
+              <option value="known">Known</option>
+            </select>
+          </div>
+          <div>
+            <label for="filter-category" class="block text-sm font-medium text-gray-700">Category</label>
+            <select id="filter-category" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+              <option value="all">All Categories</option>
+              <option value="Noun">Nouns</option>
+              <option value="Verb">Verbs</option>
+              <option value="Adjective">Adjectives</option>
+              <option value="Adverb">Adverbs</option>
+              <option value="Expression">Expressions</option>
+            </select>
+          </div>
+          <div>
+            <label for="sort-by" class="block text-sm font-medium text-gray-700">Sort By</label>
+            <select id="sort-by" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+              <option value="date-desc">Date Added (Newest First)</option>
+              <option value="date-asc">Date Added (Oldest First)</option>
+              <option value="alpha-asc">Alphabetical (A-Z)</option>
+              <option value="alpha-desc">Alphabetical (Z-A)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Word List -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Words to Review</h3>
+          <div class="flex items-center">
+            <input type="checkbox" id="select-all-checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <label for="select-all-checkbox" class="ml-2 block text-sm text-gray-900">Select All</label>
+          </div>
+        </div>
+        <div id="review-list" class="space-y-2">
+          <!-- Words will be loaded here -->
+          <p class="text-center text-gray-500 py-4">Loading words...</p>
+        </div>
+        <div class="mt-4 flex justify-between">
+          <span id="word-count-info" class="text-sm text-gray-500">Showing 0 words</span>
+          <div class="flex space-x-2">
+            <button id="prev-page" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              Previous
+            </button>
+            <button id="next-page" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Cheatsheet Modal -->
+  <div id="create-cheatsheet-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+      </div>
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                Create Cheatsheet
+              </h3>
+              <div class="mt-4">
+                <label for="cheatsheet-title" class="block text-sm font-medium text-gray-700">Title</label>
+                <input type="text" name="cheatsheet-title" id="cheatsheet-title" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Enter cheatsheet title">
+              </div>
+              <div class="mt-4">
+                <p class="text-sm text-gray-500" id="selected-words-count">No words selected</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <button type="button" id="save-cheatsheet-btn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+            Save
+          </button>
+          <button type="button" id="cancel-cheatsheet-btn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz Modal -->
+  <div id="quiz-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+      </div>
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+              <div class="flex justify-between items-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id="quiz-title">
+                  Quiz
+                </h3>
+                <span class="text-sm text-gray-500" id="quiz-progress">1/10</span>
+              </div>
+              <div class="mt-4 text-center py-8">
+                <h4 class="text-xl font-bold" id="quiz-word">Loading...</h4>
+                <div id="quiz-options" class="mt-4 space-y-2">
+                  <!-- Quiz options will be loaded here -->
+                </div>
+              </div>
+              <div id="quiz-feedback" class="mt-4 p-4 rounded-md hidden">
+                <!-- Feedback will appear here -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <button type="button" id="next-quiz-btn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+            Next
+          </button>
+          <button type="button" id="close-quiz-btn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+            Exit Quiz
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="review.js"></script>
+</body>
+</html>
